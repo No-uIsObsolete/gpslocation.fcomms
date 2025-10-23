@@ -1,0 +1,38 @@
+<?php
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
+
+
+function connect()
+{
+    return mysqli_connect("195.201.38.255", "afura_gps_location", "?a)y*uO4R+H!FBtW", "afura_gps_location");
+}
+
+function sqlInsert($table, $params)
+{
+    $con = connect();
+    $keys = array_keys($params);
+    $values = array_values($params);
+
+
+    $query = "INSERT INTO $table ( " . implode(", ", $keys) . " ) VALUES ( '" . implode("', '", $values) . "');";
+    $sql = mysqli_query($con, $query);
+
+}
+
+function sqlUpdate($table, $params, $target, $targetData)
+{
+    $con = connect();
+
+
+    $query = "UPDATE $table
+                SET $params
+                WHERE $target = '$targetData'";
+    $sql = mysqli_query($con, $query);
+
+}
+
+
+
+?>
