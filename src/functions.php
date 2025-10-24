@@ -33,6 +33,17 @@ function sqlUpdate($table, $params, $target, $targetData)
 
 }
 
+function sqlResult($query)
+{
+    $con = connect();
+    $sql = mysqli_query($con, $query);
+    $result = array();
+    while ($row = $sql->fetch_assoc()) {
+        $result[] = $row;
+    }
+    return $result;
+}
+
 
 
 ?>
