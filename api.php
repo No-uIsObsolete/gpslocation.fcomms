@@ -3,32 +3,31 @@ ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 require 'src/functions.php';
-//echo "<pre>";
+header('Access-Control-Allow-Origin: *');
 
 
-$location_name_list = sqlResult( 'SELECT location_name FROM `location` GROUP BY `location_name`;');
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $name = $_POST['name'] ?? '';
+    $lat = $_POST['latitude'] ?? '';
+    $lon = $_POST['longitude'] ?? '';
+    $alt = $_POST['altitude'] ?? '';
+    $bearing = $_POST['bearing'] ?? '';
+    $time = $_POST['time'] ?? '';
 
-
-foreach ($location_name_list as $location) {
-    $result = sqlResult('SELECT * FROM `location` WHERE location_name = "' . $location['location_name'] . '" ORDER BY `timestamp` DESC LIMIT 1;');
-    //var_dump($result);
-    echo 'Nazwa: '.$result[0]['location_name']."<br> Lat: ".
-        $result[0]['latitude']."<br> Lon: ".
-        $result[0]['longitude']."<br> Alt: ".
-        $result[0]['altitude']."<br> Bearing: ".
-        $result[0]['bearing']."<br> Last Timestamp: ".
-        $result[0]['timestamp']."<br> <br>";
+    if ($name && $lat && $lon && $alt && $bearing && $time) {
+        sqlInsert('location', [
+            'location_name' => $name,
+            'latitude' => $lat,
+            'longitude' => $lon,
+            'altitude' => $alt,
+            'bearing' => $bearing,
+            'timestamp' => $time
+        ]);
+        echo "SUCCESS";
+    } else {
+        echo "MISSING_FIELDS";
+    }
+} else {
+    echo "INVALID_REQUEST";
 }
-
-
-
-
-
-
-
-
-
-
-
-
 ?>
