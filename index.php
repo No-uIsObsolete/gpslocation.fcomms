@@ -9,43 +9,53 @@ require 'src/functions.php';
 
 
 
-//$location_name_list = sqlResult( 'SELECT location_name FROM `location` GROUP BY `location_name`;');
+$location_list = sqlResult( 'SELECT * FROM `location` WHERE location_name = "Andrzej" ORDER BY `timestamp` DESC LIMIT 1;');
 
 
-//foreach ($location_name_list as $location) {
-//    $result = sqlResult('SELECT * FROM `location` WHERE location_name = "' . $location['location_name'] . '" ORDER BY `timestamp` DESC LIMIT 1;');
-//    //var_dump($result);
-//    echo 'Nazwa: '.$result[0]['location_name']."<br> Lat: ".
-//        $result[0]['latitude']."<br> Lon: ".
-//        $result[0]['longitude']."<br> Alt: ".
-//        $result[0]['altitude']."<br> Bearing: ".
-//        $result[0]['bearing']."<br> Last Timestamp: ".
-//        $result[0]['timestamp']."<br> <br>";
-//}
+foreach ($location_list as $location) {
+    //var_dump($result);
+    echo 'Nazwa: '.$location['location_name']."<br> Lat: ".
+        $location['latitude']."<br> Lon: ".
+        $location['longitude']."<br> Alt: ".
+        $location['altitude']."<br> Bearing: ".
+        $location['bearing']."<br> Last Timestamp: ".
+        $location['timestamp']."<br> <br>";
+}
 
 ?>
-<!DOCTYPE html>
-<!--
- @license
- Copyright 2025 Google LLC. All Rights Reserved.
- SPDX-License-Identifier: Apache-2.0
--->
-
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-    <title>Add a Map</title>
-
-    <link rel="stylesheet" type="text/css" href="./style.css" />
-    <script type="module" src="./index.js"></script>
-    <!-- prettier-ignore -->
-    <script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
-        ({key: "YOUR_API_KEY", v: "weekly"});</script>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
 </head>
 <body>
+<!-- %2C = Co-ordinate separator -->
+<!--
+https://www.openstreetmap.org/export/embed.html?bbox=[lon]%2C[lat]%2C[lon]%2C[lat]&amp;layer=mapnik&amp;marker=[lat]%2C[lon]"
+-->
 
-<!-- The map, centered at Uluru, Australia. -->
-<gmp-map center="-25.344,131.031" zoom="4" map-id="DEMO_MAP_ID">
-</gmp-map>
+<iframe
+        width="425"
+        height="350"
+        src="https://www.openstreetmap.org/export/embed.html?bbox=21.006267070770267%2C52.23042143591496%2C21.010746359825138%2C52.231827666971355&amp;layer=mapnik&amp;marker=52.23112455701123%2C21.0085067152977"
+        style="border: 1px solid black">
 
+</iframe>
+
+
+
+
+<script src="assets/js/jquery.js"></script>
+<script type="text/javascript">
+</script>
 </body>
 </html>
+
+
+
+
+
