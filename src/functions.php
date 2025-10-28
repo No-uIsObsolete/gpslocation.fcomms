@@ -46,6 +46,15 @@ function sqlResult($query)
     return $result;
 }
 
+function getLocation($locationName) {
+    $result = sqlResult( 'SELECT * FROM `location` WHERE location_name = "'.$locationName.'" ORDER BY `timestamp` DESC LIMIT 1;');
+    return $result;
+}
+
+function getLocationInfo($locationName) {
+    $result = sqlResult( 'SELECT * FROM `location` WHERE location_name = "'.$locationName.'" ORDER BY `timestamp` DESC LIMIT 2;');
+    return $result;
+}
 
 
 ?>
