@@ -52,7 +52,7 @@ function getLocation($locationName) {
 }
 
 function getLocationInfo($locationName) {
-    $result = sqlResult( 'SELECT * FROM `location` WHERE location_name = "'.$locationName.'" ORDER BY `timestamp` DESC LIMIT 2;');
+    $result = sqlResult( 'SELECT * FROM `location` WHERE location_name = "'.$locationName.'" ORDER BY `timestamp` DESC LIMIT 10;');
     return $result;
 }
 
