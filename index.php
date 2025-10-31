@@ -49,7 +49,7 @@ require 'src/functions.php';
         $location_name_list = sqlResult( 'SELECT location_name FROM `location` GROUP BY `location_name`;');
 
         foreach ($location_name_list as $location_list) {
-            echo '<option value="'.$location_list['location_name'].'">'.$location_list['location_name'].'</option>';
+            echo '<option value="'.$location_list['location_name'].'" data-hashedValue="'.hash('sha1', $location_list['location_name']).'">'.$location_list['location_name'].'</option>';
         }
 
         ?>
@@ -67,10 +67,27 @@ require 'src/functions.php';
 
 <script src="assets/js/Leaflet/leaflet.js"></script>
 <script src="assets/js/jquery.js"></script>
+<script src="assets/js/mqtt.min.js"></script>
 <script type="text/javascript">
+    const url = 'wss://mqtt.kgtech.pl:8888'
+    const options = {
+        clean: true,
+        connectTimeout: 4000
+    }
+    const client = mqtt.connect(url, options)
 
 
     $(document).ready(function () {
+        client.on('connect', function () {
+            console.log('Connected')
+            // Subscribe to a topic
+
+            })
+
+
+
+
+
 
         let map = L.map('map').setView([52.23152293421792, 21.005272435188297], 17);
 
@@ -96,22 +113,43 @@ require 'src/functions.php';
             markers: [],
             pathLine: null
         };
-        let Interval = null;
-        $(document).on('change', 'select[id="tracks"]', function () {
-            let locationName = $(this).find(":selected").val();
-            if (Interval) {
-                clearInterval(Interval);
-                Interval = null;
-            }
-            if (locationName !== "") {
 
+        let lastTopic = null;
+
+        // let Interval = null;
+        $(document).on('change', 'select[id="tracks"]', function () {
+            if (lastTopic != null) {
+                client.unsubscribe(lastTopic);
+                lastTopic = null;
+            }
+            let locationName = $(this).find(":selected").val();
+            var selectedOption = $(this).find(':selected');
+            var hashedName = selectedOption.data('hashedvalue');
+            // if (Interval) {
+            //     clearInterval(Interval);
+            //     Interval = null;
+            // }
+            if (locationName !== "") {
                 LocationTracking(locationName, map, lastMarker, mapData)
 
+                lastTopic = `gpslocation/location/${hashedName}`
 
+                client.subscribe(lastTopic, function (err) {
+                    if (!err) {
+                        console.log(`Subscribed to ${lastTopic}`)
+                    } else {
+                        console.error('Subscription error:', err)
+                    }
 
-                Interval = setInterval(function () {
-                    LocationTracking(locationName, map, lastMarker, mapData);
-                }, 5000);
+                client.on('message', function (topic, payload, packet) {
+                    // Payload is Buffer
+                    console.log(`Topic: ${topic}, Message: ${payload.toString()}, QoS: ${packet.qos}`)
+                    LocationTracking(locationName, map, lastMarker, mapData)
+                })
+                })
+            // Interval = setInterval(function () {
+                //     LocationTracking(locationName, map, lastMarker, mapData);
+                // }, 5000);
             }
         })
     })
@@ -135,23 +173,26 @@ require 'src/functions.php';
 
                     let points = markerDataDump(data.data)
 
-                    console.log (points)
+                    //console.log (points)
                     //////////////////////////////////////////////
                     points.forEach((p, i) => {
                         let [pointLat, pointLon] = p.coords;
-                        let velocity = 0;
+                        let speed = 0;
 
                         if (i < points.length - 1) {
 
                             if (i === 0) {
-                                console.log(p.coords)
+                                //console.log(p.coords)
                                 let next = points[i + 1];
                                 let dist = distanceInBetween(pointLat, pointLon, next.coords[0], next.coords[1]);
                                 let tDiff = timeDiff(p.time, next.time);
-                                velocity = (dist / tDiff).toFixed(2);
+                                speed = (dist / tDiff).toFixed(2);
+                                if (speed < 0) {
+                                    speed = speed * -1;
+                                }
                                 map.setView([pointLat, pointLon])
                                 lastMarker.setLatLng([pointLat, pointLon]);
-                                lastMarker.bindPopup("<b>Czas:</b><br>" + p.time +"<br><b>Prędkość:</b> "+ velocity + "m/s")
+                                lastMarker.bindPopup("<b>Czas:</b><br>" + p.time +"<br><b>Prędkość:</b> "+ speed + "m/s")
                                 lastMarker.on('mouseover', function (e) {
                                     this.openPopup();
                                 });
@@ -164,11 +205,14 @@ require 'src/functions.php';
                                 let next = points[i + 1];
                                 let dist = distanceInBetween(pointLat, pointLon, next.coords[0], next.coords[1]);
                                 let tDiff = timeDiff(p.time, next.time);
-                                velocity = (dist / tDiff).toFixed(2);
+                                speed = (dist / tDiff).toFixed(2);
+                                if (speed < 0) {
+                                    speed = speed * -1;
+                                }
 
                                 let marker = L.marker([pointLat, pointLon]).addTo(map);
                                 marker.bindPopup(
-                                    "<b>Czas:</b><br>" + p.time + "<br><b>Prędkość:</b> "+ velocity + "m/s"
+                                    "<b>Czas:</b><br>" + p.time + "<br><b>Prędkość:</b> "+ speed + "m/s"
                                 )
                                 marker.on('mouseover', function() { this.openPopup(); });
                                 marker.on('mouseout', function() { this.closePopup(); });

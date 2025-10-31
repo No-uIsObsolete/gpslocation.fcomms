@@ -4,6 +4,14 @@ ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 require 'src/functions.php';
 header('Access-Control-Allow-Origin: *');
+require 'Bluerhinos/phpMQTT.php';
+
+use Bluerhinos\phpMQTT;
+
+$server = 'mqtt.kgtech.pl';
+$port = 8888;
+$client_id = 'phpPublisher_' . uniqid();
+
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -23,6 +31,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'bearing' => $bearing,
             'timestamp' => $time
         ]);
+        $mqtt = new phpMQTT($server, $port, $client_id);
+
+        if ($mqtt->connect(true, NULL)) {
+            $topic = "gpslocation/location/" . hash('sha1', $name);
+
+            $payload = json_encode([
+                'name' =>  $name,
+                'latitude' => $lat,
+                'longitude' => $lon,
+                'altitude' => $alt,
+                'bearing' => $bearing,
+                'time' => $time
+            ]);
+
+            $mqtt->publish($topic, $payload, 0);
+            $mqtt->close();
+
+
+            echo "SUCCESS_MQTT";
+        } else {
+            echo "MQTT_CONNECT_FAILED";
+        }
+
         echo "SUCCESS";
     } else {
         echo "MISSING_FIELDS";
