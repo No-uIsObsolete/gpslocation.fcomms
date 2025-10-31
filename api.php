@@ -4,12 +4,12 @@ ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 require 'src/functions.php';
 header('Access-Control-Allow-Origin: *');
-require 'Bluerhinos/phpMQTT.php';
+require __DIR__ . '/vendor/bluerhinos/phpmqtt/phpMQTT.php';
 
 use Bluerhinos\phpMQTT;
 
-$server = 'mqtt.kgtech.pl';
-$port = 8888;
+$server = '195.201.38.255';
+$port = 1883;
 $client_id = 'phpPublisher_' . uniqid();
 
 

@@ -144,7 +144,38 @@ require 'src/functions.php';
                 client.on('message', function (topic, payload, packet) {
                     // Payload is Buffer
                     console.log(`Topic: ${topic}, Message: ${payload.toString()}, QoS: ${packet.qos}`)
-                    LocationTracking(locationName, map, lastMarker, mapData)
+                    const payloadData = JSON.parse(payload);
+
+                    let lastMarkerCoords = lastMarker.getLatLng();
+                    let lastMarkerPopup = lastMarker.getPopup()
+                    let lastTime = lastMarker.timeDate
+                    let marker = L.marker([lastMarkerCoords.lat, lastMarkerCoords.lng]).bindPopup(lastMarkerPopup).addTo(map)
+                    marker.on('mouseover', function() { this.openPopup(); });
+                    marker.on('mouseout', function() { this.closePopup(); });
+
+                    mapData.markers.push(marker);
+
+
+                    console.log(lastMarkerCoords.lat, lastMarkerCoords.lng, payloadData.latitude, payloadData.longitude)
+
+                    let dist = distanceInBetween(lastMarkerCoords.lat, lastMarkerCoords.lng, payloadData.latitude, payloadData.longitude);
+                    let tDiff = timeDiff(lastTime.time, payloadData.time);
+                    let speed = (dist / tDiff).toFixed(2);
+                    if (speed < 0) {
+                        speed = speed * -1;
+                    }
+                    map.setView([payloadData.latitude, payloadData.longitude])
+                    lastMarker.setLatLng([payloadData.latitude, payloadData.longitude]);
+                    lastMarker.bindPopup("<b>Czas:</b><br>" + payloadData.time +"<br><b>Prędkość:</b> "+ speed + "m/s")
+                    lastMarker.on('mouseover', function (e) {
+                        this.openPopup();
+                    });
+                    lastMarker.on('mouseout', function (e) {
+                        this.closePopup();
+                    });
+
+                    mapData.pathLine = L.polyline([[lastMarkerCoords.lat, lastMarkerCoords.lng], [payloadData.latitude, payloadData.longitude]], { color: 'blue' }).addTo(map);
+
                 })
                 })
             // Interval = setInterval(function () {
@@ -193,6 +224,7 @@ require 'src/functions.php';
                                 map.setView([pointLat, pointLon])
                                 lastMarker.setLatLng([pointLat, pointLon]);
                                 lastMarker.bindPopup("<b>Czas:</b><br>" + p.time +"<br><b>Prędkość:</b> "+ speed + "m/s")
+                                lastMarker.timeDate = {time: `${p.time}`}
                                 lastMarker.on('mouseover', function (e) {
                                     this.openPopup();
                                 });
