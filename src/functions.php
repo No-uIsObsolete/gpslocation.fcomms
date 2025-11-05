@@ -59,7 +59,7 @@ function getLocationInfo($locationName) {
 function getUser($user, $password)
 {
     $hashedPassword = hash('sha256', $password);
-    $query = "SELECT * FROM users where (username = '$user' or email = '$user') AND password = '$hashedPassword' LIMIT 1";
+    $query = "SELECT * FROM user where (username = '$user' or email = '$user') AND password = '$hashedPassword' LIMIT 1";
     $result = sqlResult($query);
     if (isset($result[0])) {
         return $result[0];
@@ -69,7 +69,7 @@ function getUser($user, $password)
 function checkUsername($username)
 {
 
-    $query = "SELECT username FROM users WHERE username = '$username'";
+    $query = "SELECT username FROM user WHERE username = '$username'";
     $result = sqlResult($query);
     if (isset ($result[0])) {
         if ($result[0]['username'] == $username) {
@@ -84,7 +84,7 @@ function checkUsername($username)
 
 function checkEmail($email)
 {
-    $query = "SELECT email FROM users WHERE email = '$email'";
+    $query = "SELECT email FROM user WHERE email = '$email'";
     $result = sqlResult($query);
     if (isset ($result[0])) {
         if ($result[0]['email'] == $email) {
@@ -100,7 +100,7 @@ function checkLogin($user, $password)
 {
 
     $hashedPassword = hash('sha256', $password);
-    $query = "SELECT id, username, email, `password`, status FROM users where (username = '$user' or email = '$user') AND password = '$hashedPassword'";
+    $query = "SELECT id, username, email, `password`, status FROM user where (username = '$user' or email = '$user') AND password = '$hashedPassword'";
     $result = sqlResult($query);
 
     if (isset($result[0])) {
@@ -210,9 +210,26 @@ function addUser($user, $password, $email, $firstname, $lastname, $telephone)
     $hashedPassword = hash('sha256', $password);
 
 
-    $table = 'users';
+    $table = 'user';
     sqlInsert($table, ['username' => $user, 'password' => $hashedPassword, 'email' => $email, 'firstname' => $firstname, 'lastname' => $lastname,
         'telephone' => $telephone, 'created_at' => $currentTime, 'updated_at' => $currentTime, 'status' => 1]);
+}
+
+
+
+function getUserApi($user, $password)
+{
+    $hashedPassword = hash('sha256', $password);
+    $query = "SELECT * FROM user where (email = '$user') AND password = '$hashedPassword' AND status = '1' LIMIT 1";
+    $result = sqlResult($query);
+    if (isset($result[0])) {
+        return [
+            'username' => $result[0]['username'],
+            'email' => $result[0]['email']
+        ];
+    } else {
+        return null;
+    }
 }
 
 

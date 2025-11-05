@@ -1,12 +1,13 @@
 <?php
-
-
-
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
+require 'src/functions.php';
+if (isset($_SESSION['user'])) {
+    header('Location: index.php');
+}
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    //echo "The request is using the POST method <br>";
-//var_dump($_POST);
-//die;
 
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
@@ -17,17 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $telephoneNumber = trim($_POST['telephone2']);
     $telephone = trim($telephoneCode . $telephoneNumber);
     $passwordRepeat = trim($_POST['passwordRepeat']);
-
-
-    /*
-    if (strlen($username) == 0 || strlen($password) == 0 || strlen($firstname) == 0 || strlen($lastname) == 0 || strlen($email) == 0) {
-        return false;
-    }
-    else {
-        if ($passwordRepeat == $password) {
-            echo "Nazwa Użytkownika: $username <br> Imie: $firstname <br> Nazwisko: $lastname <br> Hasło: $password <br> Email: $email <br> Telefon: $telephone";
-        }
-    }*/
 
     if (!usernameValidation($username)) {
         $errors['username'] = "Username is invalid";
