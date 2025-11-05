@@ -36,12 +36,13 @@ require 'src/functions.php';
     <title>GPS</title>
 </head>
 <body>
+<h1>GPS-Location</h1>
 <!-- %2C = Co-ordinate separator -->
 <!--
 ...bbox=[lon]%2C[lat]%2C[lon]%2C[lat]&amp;layer=mapnik&amp;marker=[lat]%2C[lon]"
 -->
 <div id="map"></div>
-
+<section>Wybierz Trasę:</section>
 <form>
     <select id="tracks">
         <option value="">Brak Trasy</option>
