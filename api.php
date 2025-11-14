@@ -16,15 +16,17 @@ $client_id = 'phpPublisher_' . uniqid();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['name'] ?? '';
+    $id = $_POST['id'] ?? '';
     $lat = $_POST['latitude'] ?? '';
     $lon = $_POST['longitude'] ?? '';
     $alt = $_POST['altitude'] ?? '';
     $bearing = $_POST['bearing'] ?? '';
     $time = $_POST['time'] ?? '';
 
-    if ($name && $lat && $lon && $alt && $bearing && $time) {
+    if ($name !== '' && $id !== '' && $lat !== '' && $lon !== '' && $alt !== '' && $bearing !== '' && $time !== '') {
         sqlInsert('location', [
             'location_name' => $name,
+            'user_id' => $id,
             'latitude' => $lat,
             'longitude' => $lon,
             'altitude' => $alt,

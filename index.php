@@ -4,7 +4,9 @@ ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 require 'src/functions.php';
 //echo "<pre>";
-
+if (!isset($_SESSION['user'])) {
+    header('Location: login.php');
+}
 
 
 
@@ -33,10 +35,15 @@ require 'src/functions.php';
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="assets/js/Leaflet/leaflet.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
     <title>GPS</title>
 </head>
 <body>
-<h1>GPS-Location</h1>
+
+<header>
+    <h1>GPS-Location</h1>
+    <button onclick="<?php logout()?>"> Log out </button>
+</header>
 <!-- %2C = Co-ordinate separator -->
 <!--
 ...bbox=[lon]%2C[lat]%2C[lon]%2C[lat]&amp;layer=mapnik&amp;marker=[lat]%2C[lon]"
@@ -47,7 +54,7 @@ require 'src/functions.php';
     <select id="tracks">
         <option value="">Brak Trasy</option>
         <?php
-        $location_name_list = sqlResult( 'SELECT location_name FROM `location` GROUP BY `location_name`;');
+        $location_name_list = sqlResult( 'SELECT location_name FROM `location` INNER JOIN `user` ON location.user_id = user.id WHERE user.email="'.$_SESSION['email'].'" GROUP BY `location_name`;');
 
         foreach ($location_name_list as $location_list) {
             echo '<option value="'.$location_list['location_name'].'" data-hashedValue="'.hash('sha1', $location_list['location_name']).'">'.$location_list['location_name'].'</option>';

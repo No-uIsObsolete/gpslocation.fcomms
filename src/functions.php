@@ -100,7 +100,7 @@ function checkLogin($user, $password)
 {
 
     $hashedPassword = hash('sha256', $password);
-    $query = "SELECT id, username, email, `password`, status FROM user where (username = '$user' or email = '$user') AND password = '$hashedPassword'";
+    $query = "SELECT id, username, email, password, status FROM user where (username = '$user' or email = '$user') AND password = '$hashedPassword'";
     $result = sqlResult($query);
 
     if (isset($result[0])) {
@@ -194,25 +194,21 @@ function passwordRepeatValidation($password, $passwordRepeat)
     }
 }
 
-function mainValidation($username, $password, $email, $firstname, $lastname)
+function mainValidation($username, $email, $password)
 {
-    if (strlen($username) == 0 || strlen($password) == 0 || strlen($firstname) == 0 || strlen($lastname) == 0 || strlen($email) == 0) {
+    if (strlen($username) == 0 ||  strlen($email) == 0 || strlen($password) == 0)  {
         return false;
     } else {
         return true;
     }
 }
 
-function addUser($user, $password, $email, $firstname, $lastname, $telephone)
+function addUser($user, $email, $password)
 {
-
-    $currentTime = date("Y-m-d H:i:s");
     $hashedPassword = hash('sha256', $password);
 
-
     $table = 'user';
-    sqlInsert($table, ['username' => $user, 'password' => $hashedPassword, 'email' => $email, 'firstname' => $firstname, 'lastname' => $lastname,
-        'telephone' => $telephone, 'created_at' => $currentTime, 'updated_at' => $currentTime, 'status' => 1]);
+    sqlInsert($table, ['username' => $user, 'email' => $email, 'password' => $hashedPassword, 'status' => 1]);
 }
 
 
@@ -224,6 +220,7 @@ function getUserApi($user, $password)
     $result = sqlResult($query);
     if (isset($result[0])) {
         return [
+            'id' => $result[0]['id'],
             'username' => $result[0]['username'],
             'email' => $result[0]['email']
         ];
@@ -232,5 +229,9 @@ function getUserApi($user, $password)
     }
 }
 
-
+function logout()
+{
+    session_unset();
+    header('Location: login.php');
+}
 ?>

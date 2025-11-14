@@ -7,11 +7,8 @@ if (isset($_SESSION['user'])) {
     header('Location: index.php');
 }
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['user']);
+    $email = trim($_POST['email']);
     $password = trim($_POST['password']);
-
-    $checkbox = trim($_POST['rememberCheck']);
-
 
     $checkLogin = checkLogin($email, $password);
 
@@ -35,12 +32,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <h1>GPS-Location</h1>
-    <form>
+    <form action="/login.php" method="post">
         <label for="emailInput">E-mail:</label> <br>
         <input name="email" id="emailInput" type="email"> <br>
         <label for="passwordInput">Password:</label> <br>
         <input name="password" id="passwordInput" type="password"> <br>
-        <?php if (isset($checkLogin)) {echo $checkLogin;} ?> <br> <br>
+        <?php if (isset($checkLogin)) {echo $checkLogin;} ?> <br>
+        Brak Login'u? <a href="register.php">Register Here</a> <br> <br>
         <input type="submit" value="login">
     </form>
 </body>

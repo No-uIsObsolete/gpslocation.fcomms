@@ -10,13 +10,8 @@ $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $username = trim($_POST['username']);
-    $password = trim($_POST['password']);
-    $firstname = trim($_POST['firstname']);
-    $lastname = trim($_POST['lastname']);
     $email = trim($_POST['email']);
-    $telephoneCode = trim($_POST['telephone1']);
-    $telephoneNumber = trim($_POST['telephone2']);
-    $telephone = trim($telephoneCode . $telephoneNumber);
+    $password = trim($_POST['password']);
     $passwordRepeat = trim($_POST['passwordRepeat']);
 
     if (!usernameValidation($username)) {
@@ -29,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!passwordRepeatValidation($password, $passwordRepeat)) {
         $errors['password'] = "Password isn't the same";
     }
-    if (!mainValidation($username, $password, $email, $firstname, $lastname)) {
+    if (!mainValidation($username, $email, $password)) {
         $errors['main'] = "<p>Fill all the required fields</p>";
     }
     if (!passwordValidation($password)) {
@@ -58,22 +53,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
     if (empty($errors))  {
-        addUser($username, $password, $email, $firstname, $lastname, $telephone);
+        addUser($username, $email, $password);
         header('Location: login.php');
     }
 
-
-
-
 }
-
-
-
-
-
-
-
-
 ?>
 <!DOCTYPE html>
 <html lang="pl">
@@ -87,16 +71,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 <h1>GPS-Location</h1>
-<form>
+<form action="/register.php" method="post">
+    <?php if (isset($errors['main'])){
+        echo $errors['main'];
+    } ?>
         <label for="usernameInput">Username:</label> <br>
-            <input name="username" id="usernameInput" type="text"><br>
+            <input name="username" id="usernameInput" type="text" value="<?php echo $_POST['username']??'';?>">
+    <?php if (isset($errors['username'])){
+        echo $errors['username'];
+    }
+    else {
+        if (isset($errors['usernameInUse'])){echo $errors['usernameInUse'];}
+    }?><br>
         <label for="emailInput">E-mail:</label> <br>
-            <input name="email" id="emailInput" type="email"><br>
+            <input name="email" id="emailInput" type="email" value="<?php echo $_POST['email']??'';?>">
+    <?php if (isset($errors['email'])){
+        echo $errors['email'];
+    }
+    else {
+        if (isset($errors['emailInUse'])){echo $errors['emailInUse'];}
+    }?><br>
         <label for="passwordInput">Password:</label> <br>
-            <input name="password" id="passwordInput" type="password"><br>
+            <input name="password" id="passwordInput" type="password" value="<?php echo $_POST['password']??'';?>">
+    <?php if (isset($errors['passwordLength'])){
+        echo $errors['passwordLength'];
+    } else {
+        if (isset($errors['passwordLowercase'])){ echo $errors['passwordLowercase'];}
+        else {
+            if (isset($errors['passwordUppercase'])){ echo $errors['passwordUppercase'];}
+            else {
+                if (isset($errors['passwordNumber'])){ echo $errors['passwordNumber'];}
+                else {
+                    if (isset($errors['passwordSpecialCharacters'])){ echo $errors['passwordSpecialCharacters'];}
+                }
+            }
+
+
+        }
+    }?><br>
         <label for="passwordRepeatIn">Repeat Password:</label> <br>
-            <input name="passwordRepeat" id="passwordRepeatIn" type="password"><br> <br>
+            <input name="passwordRepeat" id="passwordRepeatIn" type="password" value="<?php echo $_POST['passwordRepeat']??'';?>">
+    <?php if (isset($errors['password'])){
+        echo $errors['password'];
+    } ?><br> <br>
     <input type="submit" value="register">
+    Masz już konto? <a href="login.php">Zaloguj Się</a> <br>
 </form>
 </body>
 </html>
