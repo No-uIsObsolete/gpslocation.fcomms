@@ -6,25 +6,8 @@ require 'src/functions.php';
 //echo "<pre>";
 if (!isset($_SESSION['user'])) {
     header('Location: login.php');
+    exit();
 }
-
-
-
-
-//$location_list = getLocation('Andrzej');
-//
-//
-//foreach ($location_list as $location) {
-//    var_dump($result);
-//    echo 'Nazwa: '.$location['location_name']."<br> Lat: ".
-//        $location['latitude']."<br> Lon: ".
-//        $location['longitude']."<br> Alt: ".
-//        $location['altitude']."<br> Bearing: ".
-//        $location['bearing']."<br> Last Timestamp: ".
-//        $location['timestamp']."<br> <br>";
-//}
-
-
 
 ?>
 <!DOCTYPE html>
@@ -42,7 +25,7 @@ if (!isset($_SESSION['user'])) {
 
 <header>
     <h1>GPS-Location</h1>
-    <button onclick="<?php logout()?>"> Log out </button>
+    <a class="settings" href="/logout.php">Logout</a>
 </header>
 <!-- %2C = Co-ordinate separator -->
 <!--
@@ -54,7 +37,7 @@ if (!isset($_SESSION['user'])) {
     <select id="tracks">
         <option value="">Brak Trasy</option>
         <?php
-        $location_name_list = sqlResult( 'SELECT location_name FROM `location` INNER JOIN `user` ON location.user_id = user.id WHERE user.email="'.$_SESSION['email'].'" GROUP BY `location_name`;');
+        $location_name_list = sqlResult( 'SELECT location_name FROM `location` WHERE user_id="'.$_SESSION['user']['id'].'" GROUP BY `location_name`;');
 
         foreach ($location_name_list as $location_list) {
             echo '<option value="'.$location_list['location_name'].'" data-hashedValue="'.hash('sha1', $location_list['location_name']).'">'.$location_list['location_name'].'</option>';

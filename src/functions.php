@@ -1,9 +1,10 @@
 <?php
+session_start();
 ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 
-session_start();
+//session_start();
 
 
 function connect()
@@ -227,11 +228,5 @@ function getUserApi($user, $password)
     } else {
         return null;
     }
-}
-
-function logout()
-{
-    session_unset();
-    header('Location: login.php');
 }
 ?>

@@ -12,11 +12,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $checkLogin = checkLogin($email, $password);
 
-    if ($checkLogin = "Success") {
+    var_dump($checkLogin);
+
+    if ($checkLogin == "Success") {
+
         $_SESSION['user'] = getUser($email, $password);
         header('Location: index.php');
+        exit();
+    } else {
+        echo "Błąd logowania: $checkLogin";
     }
-
 }
 
 ?>
